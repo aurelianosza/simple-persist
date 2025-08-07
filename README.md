@@ -1,2 +1,2 @@
 # simple-persist
-📦 MicroStore – A Simple Local Persistence Layer
+📦 SimplePersist – A Simple Local Persistence Layer
