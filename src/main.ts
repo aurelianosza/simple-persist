@@ -3,11 +3,13 @@ import { JsonDataManager } from "./repository/jsonDataManager";
 async function main() {
 
     const rows = await (new JsonDataManager(__dirname + '/../database/json', 'users', ['id', 'name', 'birthdate']))
-        .delete([{
+        .update([{
             field: "id",
             operation: "=",
-            value: "L0M9N8O7P6Q5R4S3"
-        }]);
+            value: "Z9Y8X7W6V5U4T3S2"
+        }], {
+            name: "Joao da Silva Vasco da Gema"
+        });
 
     console.log(rows);
 

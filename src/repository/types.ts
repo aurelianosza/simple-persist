@@ -5,3 +5,7 @@ export type Filter = {
     field: string,
     value: string|number
 }
+
+export type updatedEntityDetails = {
+    rowsAffected : number
+}
