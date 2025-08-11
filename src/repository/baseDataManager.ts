@@ -1,6 +1,10 @@
+export type DataManagerLine = {
+  [key: string]: any;
+} | {}
+
 export interface BaseDataManager {
-    create(data: Object): Promise<Object>,
-    read(filters: any[], limit: number): Promise<any[]>,
-    update(filters: any[], data: any): Promise<any>,
-    delete(filters: any[]): Promise<any[]>
+    create(data: DataManagerLine): Promise<DataManagerLine>,
+    read(filters: any[], limit: number): Promise<DataManagerLine[]>,
+    update(filters: any[], data: any): Promise<DataManagerLine>,
+    delete(filters: any[]): Promise<DataManagerLine[]>
 }
