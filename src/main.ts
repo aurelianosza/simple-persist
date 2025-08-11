@@ -1,16 +1,18 @@
-import { CsvDataManager } from "./repository/csvDataManager";
+import { DataManagerFactory } from "./repository/baseDataManager";
+import { JsonDataManager } from "./repository/jsonDataManager";
 
 async function main() {
 
-    const rows = await (new CsvDataManager(__dirname + '/../database/csv', 'users', ['id', 'name', 'birthdate']))
-        .read([{
-            field: "id",
-            operation: "=",
-            value: "Ux56Vz90Wq13Bn7L"
-        }]);
+    const repository = (new DataManagerFactory)
+        .type("csv")
+        .path(__dirname + "/../database/csv")
+        .entityName("users")
+        .headers(['id', 'name', 'birthdate'])
+        .create();
+
+    const rows = await repository.read([]);
 
     console.log(rows);
-
 }
 
 main();

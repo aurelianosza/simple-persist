@@ -2,16 +2,18 @@ import { BaseDataManager } from "./baseDataManager";
 import * as csv from 'fast-csv';
 import fs from "fs";
 import { generateRandomId, orderObjectByHeaders } from "../tools/helpers";
-import { FilterOperation } from "./types";
+import { Filter, FilterOperation } from "./types";
 import { CanEvaluateLines, CanEvaluateLinesInterface } from "../decorators/canEvaluateLines";
+import { get, set } from "lodash";
 
 @CanEvaluateLines
-export class CsvDataManager implements BaseDataManager, CanEvaluateLinesInterface {
+export class CsvDataManager<T extends Object> implements BaseDataManager<T>, CanEvaluateLinesInterface {
 
-    path: string;
-    entityName: string;
-    headers: string[];
-    delimiter: string = "|";
+    path : string;
+    entityName : string;
+    headers : string[];
+    delimiter : string = "|";
+    keyBy : string = "id"
 
     evaluateLine!: (filters: any[], line: any) => boolean;
 
@@ -91,17 +93,12 @@ export class CsvDataManager implements BaseDataManager, CanEvaluateLinesInterfac
         });
     }
 
-    private generateRandomModelId(): string
-    {
-        return generateRandomId();
-    }
-
-    create(data: any): any {
+    create(data: T): any {
 
         const csvWriteStream = this.getCsvWriteStream();
 
-        if (!data['id']) {
-            data['id'] = this.generateRandomModelId();
+        if (!get(data, this.keyBy)) {
+            set(data, this.keyBy, generateRandomId());
         }
 
         const ordered = orderObjectByHeaders(data, this.headers);
@@ -189,11 +186,7 @@ export class CsvDataManager implements BaseDataManager, CanEvaluateLinesInterfac
         });
     }
 
-    delete(filters: {
-        operation : FilterOperation,
-        field: string,
-        value: string|number
-    }[]): Promise<any[]> {
+    delete(filters: Filter[]): Promise<any[]> {
         const rowsToReturn: any[] = [];
 
         const mainFileStream = this.getFileReadStream()
@@ -236,6 +229,29 @@ export class CsvDataManager implements BaseDataManager, CanEvaluateLinesInterfac
                             resolve(rowsToReturn);
 
                         });
+                });
+        });
+    }
+
+    find(key: string | number): Promise<T|null> {
+        
+        return new Promise((resolve, reject) => {
+            
+            const fileStream = this.getFileReadStream()
+                .pipe(this.getCsvReadStream())
+                .on("data", (row: T) => {
+
+                    if (get(row, this.keyBy, null) == key) {
+                        fileStream.destroy();
+                        resolve(row);
+                    }
+                })
+                .on("end", () => {
+                    fileStream.destroy();
+                    resolve(null);
+                })
+                .on("error", (err: Error) => {
+                    reject(err);
                 });
         });
     }
