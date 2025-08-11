@@ -14,7 +14,8 @@ The goal is to offer a simple and consistent API for working with structured dat
 
 ## 🚀 Roadmap
 
-- [ ] JSON file storage support
+- [x] CSV file support
+- [x] JSON file storage support
 - [ ] IndexedDB interface
 - [ ] SQLite backend
 - [ ] CLI interface
