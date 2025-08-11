@@ -1,12 +1,12 @@
-import { CsvDataManager } from "./repository/csvDataManager";
+import { JsonDataManager } from "./repository/jsonDataManager";
 
 async function main() {
 
-    const rows = await (new CsvDataManager(__dirname + '/../database/csv', 'users', ['id', 'name', 'birthdate']))
-        .read([{
+    const rows = await (new JsonDataManager(__dirname + '/../database/json', 'users', ['id', 'name', 'birthdate']))
+        .delete([{
             field: "id",
             operation: "=",
-            value: "Ux56Vz90Wq13Bn7L"
+            value: "L0M9N8O7P6Q5R4S3"
         }]);
 
     console.log(rows);

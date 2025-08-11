@@ -1,6 +1,10 @@
 import fs from "fs";
 import { CanEvaluateLines, CanEvaluateLinesInterface } from "../decorators/canEvaluateLines";
 import { BaseDataManager, DataManagerLine } from "./baseDataManager";
+import { generateRandomId } from "../tools/helpers";
+import { get, set } from "lodash";
+import path from "path";
+import { Filter } from "./types";
 
 @CanEvaluateLines
 export class JsonDataManager implements BaseDataManager, CanEvaluateLinesInterface
@@ -25,6 +29,11 @@ export class JsonDataManager implements BaseDataManager, CanEvaluateLinesInterfa
         return `${this.path}/${this.entityName}.json`;
     }
 
+    private getFullSwapEntityName(): string
+    {
+        return `${this.path}/swap/${this.entityName}.json`
+    }
+
     private loadJsonFullContent(): DataManagerLine
     {
         const fullEntityFileName = this.getFullyEntityName();
@@ -35,10 +44,42 @@ export class JsonDataManager implements BaseDataManager, CanEvaluateLinesInterfa
         }
 
         return JSON.parse(fs.readFileSync(fullEntityFileName, "utf-8"));
-    }  
+    }
 
-    create(data: Object): Promise<Object> {
-        throw new Error("Method not implemented.");
+    private generateRandomModelId(): string
+    {
+        return generateRandomId();
+    }
+
+    private createSwapFolder(filePath: string)
+    {
+        const directory = path.dirname(filePath);
+        fs.mkdirSync(directory, { recursive: true });
+    }
+
+    create(data: DataManagerLine): Promise<Object>
+    {
+        const originalFileName = this.getFullyEntityName();
+        const swapFileName = this.getFullSwapEntityName();
+        const jsonFullContent = this.loadJsonFullContent();
+
+        if (!get(data, this.keyBy, false)) {
+            set(data, this.keyBy, this.generateRandomModelId());
+        }
+        set(jsonFullContent, get(data, 'id'), data);
+
+        this.createSwapFolder(swapFileName);
+
+        fs.writeFileSync(
+            swapFileName,
+            JSON.stringify(jsonFullContent, null, 2),
+            "utf-8"
+        );
+
+        fs.copyFileSync(swapFileName, originalFileName);
+        fs.unlinkSync(swapFileName);
+
+        return Promise.resolve(data);
     }
 
     read(filters: any[], limit: number): Promise<any[]> {
@@ -56,7 +97,37 @@ export class JsonDataManager implements BaseDataManager, CanEvaluateLinesInterfa
         throw new Error("Method not implemented.");
     }
 
-    delete(filters: any[]): Promise<any[]> {
-        throw new Error("Method not implemented.");
+    delete(filters: Filter[]): Promise<any[]>
+    {
+        const originalFileName = this.getFullyEntityName();
+        const swapFileName = this.getFullSwapEntityName();
+        const jsonFullContent = this.loadJsonFullContent();
+
+        const [registersToMaintain, deletedItems] = Object.entries(jsonFullContent)
+            .reduce(([maintain, deleted], [key, row]) => {
+                
+                if (!this.evaluateLine(filters, row)) {
+                    set(maintain, key, row);
+                } else {
+                    set(deleted, key, row);
+                }
+
+                return [
+                    maintain, deleted
+                ];
+
+            }, [{}, {}]);
+
+        this.createSwapFolder(swapFileName);
+        fs.writeFileSync(
+            swapFileName,
+            JSON.stringify(registersToMaintain, null, 2),
+            "utf-8"
+        )
+
+        fs.copyFileSync(swapFileName, originalFileName);
+        fs.unlinkSync(swapFileName);
+
+        return Promise.resolve(Object.values(deletedItems));
     }
 }

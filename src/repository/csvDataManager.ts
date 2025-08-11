@@ -2,7 +2,7 @@ import { BaseDataManager } from "./baseDataManager";
 import * as csv from 'fast-csv';
 import fs from "fs";
 import { generateRandomId, orderObjectByHeaders } from "../tools/helpers";
-import { FilterOperation } from "./types";
+import { Filter, FilterOperation } from "./types";
 import { CanEvaluateLines, CanEvaluateLinesInterface } from "../decorators/canEvaluateLines";
 
 @CanEvaluateLines
@@ -189,11 +189,7 @@ export class CsvDataManager implements BaseDataManager, CanEvaluateLinesInterfac
         });
     }
 
-    delete(filters: {
-        operation : FilterOperation,
-        field: string,
-        value: string|number
-    }[]): Promise<any[]> {
+    delete(filters: Filter[]): Promise<any[]> {
         const rowsToReturn: any[] = [];
 
         const mainFileStream = this.getFileReadStream()
