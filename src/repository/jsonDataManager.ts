@@ -87,7 +87,7 @@ export class JsonDataManager<T extends Object> implements BaseDataManager<T>, Ca
         return Promise.resolve(data);
     }
 
-    read(filters: any[], limit: number): Promise<any[]> {
+    read(filters: any[], limit: number = 50): Promise<any[]> {
 
         const jsonFullContent = this.loadJsonFullContent();
 
