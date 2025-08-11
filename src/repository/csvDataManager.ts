@@ -1,18 +1,19 @@
 import { BaseDataManager } from "./baseDataManager";
 import * as csv from 'fast-csv';
 import fs from "fs";
-import { generateRandomId, orderObjectByHeaders, match } from "../tools/helpers";
-import { get, head, reject } from "lodash";
+import { generateRandomId, orderObjectByHeaders } from "../tools/helpers";
+import { FilterOperation } from "./types";
+import { CanEvaluateLines, CanEvaluateLinesInterface } from "../decorators/canEvaluateLines";
 
-type FilterOperation = "=" | ">" | "<" | ">=" | "<=" | "!=";
-
-
-export class CsvDataManager implements BaseDataManager {
+@CanEvaluateLines
+export class CsvDataManager implements BaseDataManager, CanEvaluateLinesInterface {
 
     path: string;
     entityName: string;
     headers: string[];
     delimiter: string = "|";
+
+    evaluateLine!: (filters: any[], line: any) => boolean;
 
     constructor(path: string, entityName: string, headers: string[]) {
         this.path = path;
@@ -35,11 +36,6 @@ export class CsvDataManager implements BaseDataManager {
         return fs.createWriteStream(this.getFullyEntityName(), {
             flags: "a"
         });
-    }
-    
-    private getSwapReadStream(): fs.ReadStream
-    {
-        return fs.createReadStream(this.getFullSwapEntityName())
     }
 
     private getSwapWriteStream(): fs.WriteStream
@@ -114,33 +110,6 @@ export class CsvDataManager implements BaseDataManager {
         csvWriteStream.end();
 
         return Promise.resolve(data);
-    }
-
-    private evaluateLine(filters: any[], line: any): boolean
-    {
-        if (filters.length == 0) {
-            return true;
-        }
-
-        const operations: Record<FilterOperation, (a: any, b: any) => boolean> = {
-            "=":  (a, b) => a == b,
-            "!=": (a, b) => a != b,
-            ">":  (a, b) => a > b,
-            "<":  (a, b) => a < b,
-            ">=": (a, b) => a >= b,
-            "<=": (a, b) => a <= b
-        };
-
-        return filters.every((filter: {
-            operation : FilterOperation,
-            field: string,
-            value: string|number
-        }) => {
-
-            const fieldValue = get(line, filter.field, null);
-            return operations[filter.operation]?.(fieldValue, filter.value) ?? false;
-
-        });
     }
 
     read(filters: {
