@@ -1,6 +1,6 @@
 {
-  "name": "simple-persist",
-  "version": "1.0.0",
+  "name": "tiny-persist",
+  "version": "1.0.01",
   "main": "index.js",
   "license": "MIT",
   "scripts": {

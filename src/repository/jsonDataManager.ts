@@ -40,6 +40,8 @@ export class JsonDataManager<T extends Object> implements BaseDataManager<T>, Ca
 
         if (!fs.existsSync(fullEntityFileName)) {
             console.warn(`Entity ${this.entityName} doesn\`t exists`);
+
+            this.saveUsingSwap({});
             return {};
         }
 
