@@ -7,7 +7,7 @@ import path from "path";
 import { Filter, updatedEntityDetails } from "./types";
 
 @CanEvaluateLines
-export class JsonDataManager implements BaseDataManager, CanEvaluateLinesInterface
+export class JsonDataManager<T extends Object> implements BaseDataManager<T>, CanEvaluateLinesInterface
 {
     path: string;
     entityName: string;
@@ -73,14 +73,14 @@ export class JsonDataManager implements BaseDataManager, CanEvaluateLinesInterfa
         fs.unlinkSync(swapFileName);
     }
 
-    create(data: DataManagerLine): Promise<Object>
+    create(data: T): Promise<T>
     {
         const jsonFullContent = this.loadJsonFullContent();
 
         if (!get(data, this.keyBy, false)) {
             set(data, this.keyBy, this.generateRandomModelId());
         }
-        set(jsonFullContent, get(data, 'id'), data);
+        set(jsonFullContent, get(data, this.keyBy), data);
 
         this.saveUsingSwap(jsonFullContent);
 
@@ -150,5 +150,11 @@ export class JsonDataManager implements BaseDataManager, CanEvaluateLinesInterfa
         this.saveUsingSwap(registersToMaintain);
 
         return Promise.resolve(Object.values(deletedItems));
+    }
+
+    find(key: string|number): Promise<T|null>
+    {
+        const jsonFullContent = this.loadJsonFullContent();
+        return Promise.resolve(get(jsonFullContent, key, null));
     }
 }
