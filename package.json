@@ -2,6 +2,12 @@
   "name": "tiny-persist",
   "version": "1.0.02",
   "main": "src/main.ts",
+  "exports": {
+    ".": {
+      "import": "./src/main.ts",
+      "require": "./src/main.js"
+    }
+  },
   "license": "MIT",
   "scripts": {
     "build-start" : "tsc && node build/main.js "
