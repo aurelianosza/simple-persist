@@ -1,11 +1,11 @@
 {
   "name": "tiny-persist",
-  "version": "1.0.03",
+  "version": "1.0.03.02",
   "main": "src/main.ts",
   "exports": {
     ".": {
       "import": "./src/main.ts",
-      "require": "./src/main.js"
+      "require": "./build/main.js"
     }
   },
   "license": "MIT",
