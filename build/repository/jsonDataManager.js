@@ -69,6 +69,7 @@ let JsonDataManager = (() => {
             const fullEntityFileName = this.getFullyEntityName();
             if (!fs_1.default.existsSync(fullEntityFileName)) {
                 console.warn(`Entity ${this.entityName} doesn\`t exists`);
+                this.saveUsingSwap({});
                 return {};
             }
             return JSON.parse(fs_1.default.readFileSync(fullEntityFileName, "utf-8"));
