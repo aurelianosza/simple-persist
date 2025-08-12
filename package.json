@@ -6,8 +6,8 @@
   "type": "module",
   "exports": {
     ".": {
-      "import": "./src/main.ts",
-      "require": "./build/main.js"
+      "import": "./build/esm/main.js", // usado para import
+      "require": "./build/cjs/main.cjs" // usado para require
     }
   },
   "license": "MIT",
