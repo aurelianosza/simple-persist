@@ -1,6 +1,6 @@
 {
   "name": "tiny-persist",
-  "version": "1.0.02",
+  "version": "1.0.03",
   "main": "src/main.ts",
   "exports": {
     ".": {
