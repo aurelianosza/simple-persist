@@ -1,6 +1,6 @@
 {
   "name": "tiny-persist",
-  "version": "1.0.03.06",
+  "version": "1.0.03.07",
   "main": "build/main.js",
   "types": "build/main.d.ts",
   "type": "module",
@@ -12,7 +12,10 @@
   },
   "license": "MIT",
   "scripts": {
-    "build-start": "tsc && node build/main.js "
+    "build-start": "tsc && node build/main.js",
+    "build": "yarn tsc",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "build:esm": "tsc -p tsconfig.esm.json"
   },
   "dependencies": {
     "fast-csv": "^5.0.5",
