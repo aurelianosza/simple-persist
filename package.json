@@ -1,8 +1,8 @@
 {
   "name": "tiny-persist",
-  "version": "1.0.03.05",
-  "main": "./build/main.js",
-  "types": "./build/main.d.ts",
+  "version": "1.0.03.06",
+  "main": "build/main.js",
+  "types": "build/main.d.ts",
   "type": "module",
   "exports": {
     ".": {
@@ -12,14 +12,16 @@
   },
   "license": "MIT",
   "scripts": {
-    "build-start" : "tsc && node build/main.js "
+    "build-start": "tsc && node build/main.js "
   },
   "dependencies": {
+    "fast-csv": "^5.0.5",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
     "@types/lodash": "^4.17.20",
     "@types/node": "^24.2.0",
-    "crypto": "^1.0.1",
-    "fast-csv": "^5.0.5",
-    "lodash": "^4.17.21",
+    "ts-node": "^10.9.2",
     "typescript": "^5.9.2"
   }
 }
