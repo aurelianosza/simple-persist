@@ -1,7 +1,7 @@
 {
   "name": "tiny-persist",
-  "version": "1.0.01",
-  "main": "index.js",
+  "version": "1.0.02",
+  "main": "src/main.ts",
   "license": "MIT",
   "scripts": {
     "build-start" : "tsc && node build/main.js "
